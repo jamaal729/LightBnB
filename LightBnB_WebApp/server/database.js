@@ -1,14 +1,15 @@
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
 
-const { Pool } = require("pg");
+const db = require('../db/index');
+// const { Pool } = require("pg");
 
-const pool = new Pool({
- user: "vagrant", 
- password: "123", 
- host: "localhost", 
- database: "lightbnb"
-});
+// const pool = new Pool({
+//  user: "vagrant", 
+//  password: "123", 
+//  host: "localhost", 
+//  database: "lightbnb"
+// });
 
 /// Users
 
@@ -30,7 +31,7 @@ const pool = new Pool({
 //  return Promise.resolve(user);
 // }
 const getUserWithEmail = function(email) {
- return pool
+ return db
   .query(
    `
  SELECT *
@@ -53,7 +54,7 @@ exports.getUserWithEmail = getUserWithEmail;
 //  return Promise.resolve(users[id]);
 // }
 const getUserWithId = function(id) {
- return pool
+ return db
   .query(
    `
   SELECT *
@@ -78,7 +79,7 @@ exports.getUserWithId = getUserWithId;
 //  return Promise.resolve(user);
 // }
 const addUser = function(user) {
- return pool
+ return db
   .query(
    `
  INSERT INTO users (name, email, password)
@@ -102,7 +103,7 @@ exports.addUser = addUser;
  */
 const getAllReservations = function(guest_id, limit = 10) {
  // return getAllProperties(null, 2);
- return pool
+ return db
   .query(
    ` SELECT reservations.*, properties.*, AVG(property_reviews.rating) as average_rating
     FROM reservations
@@ -135,7 +136,7 @@ exports.getAllReservations = getAllReservations;
 //  return Promise.resolve(limitedProperties);
 // }
 // const getAllProperties = function(options, limit = 10) {
-//  return pool
+//  return db
 //   .query(
 //    `
 //  SELECT * FROM properties
@@ -189,7 +190,7 @@ const getAllProperties = function(options, limit = 10) {
  // 6
  console.log(queryString);
 
- return pool
+ return db
   .query(queryString, queryParams)
   .then(res => res.rows)
   .catch(err => null);
@@ -216,7 +217,7 @@ const addProperty = function (property) {
  let queryString = `INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
  RETURNING *;`
 
-return pool.query(queryString, queryParams)
+return db.query(queryString, queryParams)
   .then(res => console.log(res.rows));
 }
 exports.addProperty = addProperty;
